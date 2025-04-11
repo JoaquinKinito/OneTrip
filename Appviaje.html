@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Hoteles y Lugares</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #df2e08;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            margin: 20px;
+        }
+        .tags-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .tags-container button {
+            background-color: #641e16;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .tags-container button:hover {
+            background-color: #fe0000;
+        }
+        .tags-container button.selected {
+            background-color: #fe0000;
+        }
+        .tags-container button:active {
+            transform: scale(0.98);
+        }
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .result {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            width: 30%;
+            display: block;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+        .result img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .result h3 {
+            text-align: center;
+            color: #641e16;
+        }
+        .result p {
+            text-align: center;
+        }
+        .emojis {
+            font-size: 20px;
+            display: inline-block;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Buscador de Hoteles y Lugares Turísticos 🏨🌴</h1>
+        <p>Selecciona etiquetas para encontrar las opciones más adecuadas a tus necesidades</p>
+    </header>
+
+    <div class="container">
+        <div class="tags-container">
+            <button onclick="toggleFilter(this, '24hrs')">24 Horas 🕒</button>
+            <button onclick="toggleFilter(this, 'WiFi')">Wi-Fi Gratis 📶</button>
+            <button onclick="toggleFilter(this, 'Piscina')">Piscina 🏊‍♂️</button>
+            <button onclick="toggleFilter(this, 'Mascotas')">Acepta Mascotas 🐶</button>
+            <button onclick="toggleFilter(this, 'Playa')">Cerca de la Playa 🌊</button>
+            <button onclick="toggleFilter(this, 'Gimnasio')">Gimnasio 🏋️‍♂️</button>
+            <button onclick="toggleFilter(this, 'Restaurante')">Restaurante 🍽️</button>
+            <button onclick="toggleFilter(this, '3Estrellas')">3 Estrellas ⭐⭐⭐</button>
+            <button onclick="toggleFilter(this, 'Económico')">Económico 💸</button>
+            <button onclick="toggleFilter(this, 'Lujo')">Lujo 💎</button>
+            <button onclick="toggleFilter(this, 'Aventura')">Aventura 🏞️</button>
+            <button onclick="toggleFilter(this, 'Romántico')">Romántico 💕</button>
+            <button onclick="resetFilters()">Restablecer Filtros 🔄</button>
+        </div>
+
+        <div class="results" id="results">
+            <!-- Hotel 1 -->
+            <div class="result" data-tags="24hrs WiFi Piscina 3Estrellas Económico Playa">
+                <img src="https://via.placeholder.com/300x200" alt="Hotel 1">
+                <h3>Hotel Ficticio A</h3>
+                <p>Un hotel económico cerca de la playa, con Wi-Fi gratuito, piscina y disponible las 24 horas.</p>
+            </div>
+            <!-- Hotel 2 -->
+            <div class="result" data-tags="24hrs Restaurante WiFi 3Estrellas">
+                <img src="https://via.placeholder.com/300x200" alt="Hotel 2">
+                <h3>Hotel Ficticio B</h3>
+                <p>Hotel de 3 estrellas con servicio de restaurante 24hrs y Wi-Fi gratuito.</p>
+            </div>
+            <!-- Hotel 3 -->
+            <div class="result" data-tags="Piscina Playa Mascotas Lujo">
+                <img src="https://via.placeholder.com/300x200" alt="Hotel 3">
+                <h3>Hotel Ficticio C</h3>
+                <p>Un lujoso resort frente a la playa, ideal para viajar con mascotas y disfrutar de la piscina.</p>
+            </div>
+            <!-- Hotel 4 -->
+            <div class="result" data-tags="WiFi Restaurante Playa Aventura">
+                <img src="https://via.placeholder.com/300x200" alt="Hotel 4">
+                <h3>Hotel Ficticio D</h3>
+                <p>Hotel con opciones de aventura al aire libre, Wi-Fi y excelente restaurante cerca de la playa.</p>
+            </div>
+            <!-- Hotel 5 -->
+            <div class="result" data-tags="Lujo Restaurante Romántico 5Estrellas">
+                <img src="https://via.placeholder.com/300x200" alt="Hotel 5">
+                <h3>Hotel Ficticio E</h3>
+                <p>Un hotel de lujo para una escapada romántica con restaurante gourmet y todas las comodidades.</p>
+            </div>
+            <!-- Hotel 6 -->
+            <div class="result" data-tags="Económico 24hrs Mascotas WiFi">
+                <img src="https://via.placeholder.com/300x200" alt="Hotel 6">
+                <h3>Hotel Ficticio F</h3>
+                <p>Un hotel económico para familias con mascotas, Wi-Fi gratuito y disponible las 24 horas.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFilter(button, tag) {
+            // Toggle the selected class for the button
+            button.classList.toggle('selected');
+
+            // Get all results
+            let results = document.querySelectorAll('.result');
+            results.forEach(result => {
+                let tags = result.getAttribute('data-tags').split(' ');
+
+                // Show or hide results based on the selected filters
+                if (button.classList.contains('selected')) {
+                    if (!tags.includes(tag)) {
+                        result.style.opacity = 0.2; // Fade out non-matching results
+                    }
+                } else {
+                    if (tags.includes(tag)) {
+                        result.style.opacity = 1; // Show matching results
+                    }
+                }
+            });
+        }
+
+        function resetFilters() {
+            let results = document.querySelectorAll('.result');
+            let buttons = document.querySelectorAll('.tags-container button');
+            
+            // Reset all filters and results
+            buttons.forEach(button => button.classList.remove('selected'));
+            results.forEach(result => result.style.opacity = 1);
+        }
+    </script>
+
+</body>
+</html>
